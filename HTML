@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RupeeWise - Smart Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="manifest" id="manifest-placeholder">
+    <meta name="theme-color" content="#ff9933">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            background-color: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background: linear-gradient(to right, #ff9933, #ff7e33);
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+        
+        .app-logo i {
+            margin-right: 8px;
+            background: white;
+            color: #ff9933;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .app-tagline {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .month-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .month-selector button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .total-container {
+            background-color: #e6f0ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-container {
+            padding: 15px;
+            background-color: #f9f9f9;
+            margin: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-title i {
+            margin-right: 8px;
+            color: #ff9933;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .category-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 8px 5px;
+            text-align: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .category-btn i {
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        .category-btn.selected {
+            background-color: #fff5e6;
+            border-color: #ff9933;
+            color: #ff9933;
+        }
+        
+        .category-btn.selected i {
+            color: #ff9933;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus {
+            border-color: #ff9933;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(255, 153, 51, 0.2);
+        }
+
+        button.add-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #138808;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        button.add-btn:hover {
+            background-color: #0c6806;
+            transform: translateY(-1px);
+        }
+        
+        button.add-btn:active {
+            transform: translateY(1px);
+        }
+
+        .expenses-list {
+            padding: 0 15px;
+        }
+
+        .expenses-title {
+            font-size: 1.1rem;
+            margin: 15px 0;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .expenses-title i {
+            margin-right: 8px;
+            color: #ff9933;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
+        }
+        
+        .expense-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .expense-details {
+            flex: 1;
+        }
+
+        .expense-details h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .category-icon {
+            margin-right: 8px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #fff5e6;
+            color: #ff9933;
+        }
+
+        .expense-date {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .expense-amount {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-right: 10px;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .delete-btn:hover {
+            opacity: 1;
+        }
+
+        .right-side {
+            display: flex;
+            align-items: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 0;
+            color: #777;
+        }
+
+        .category-filters {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 5px 15px 15px;
+            margin-bottom: 5px;
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .category-filters::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .filter-btn {
+            white-space: nowrap;
+            padding: 6px 12px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .filter-btn.active {
+            background-color: #fff5e6;
+            border-color: #ff9933;
+            color: #ff9933;
+        }
+        
+        .filter-btn.active i {
+            color: #ff9933;
+        }
+
+        .install-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #ff9933;
+            color: white;
+            padding: 15px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .install-btn {
+            background-color: white;
+            color: #ff9933;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cancel-install {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .app-version {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 20px;
+        }
+
+        @media (display-mode: standalone) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="app-logo">
+                <i class="fas fa-rupee-sign"></i>
+                <span>RupeeWise</span>
+            </div>
+            <div class="app-tagline">Smart Expense Tracking for Indians</div>
+            <div class="month-selector">
+                <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                <div id="current-month-year">April 2025</div>
+                <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </header>
+
+        <div class="total-container">
+            <div class="total-label">
+                <i class="fas fa-rupee-sign"></i> Total Expenses:
+            </div>
+            <div class="total-amount" id="total-amount">₹0.00</div>
+        </div>
+
+        <div class="form-container">
+            <h2 class="form-title"><i class="fas fa-plus-circle"></i> Add New Expense</h2>
+            <form id="expense-form">
+                <div class="form-group">
+                    <label>Category</label>
+                    <div class="categories">
+                        <div class="category-btn" data-category="food">
+                            <i class="fas fa-utensils"></i>
+                            <span>Food</span>
+                        </div>
+                        <div class="category-btn" data-category="shopping">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Shopping</span>
+                        </div>
+                        <div class="category-btn" data-category="transport">
+                            <i class="fas fa-bus"></i>
+                            <span>Transport</span>
+                        </div>
+                        <div class="category-btn" data-category="bills">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Bills</span>
+                        </div>
+                        <div class="category-btn" data-category="entertainment">
+                            <i class="fas fa-film"></i>
+                            <span>Entertain</span>
+                        </div>
+                        <div class="category-btn" data-category="health">
+                            <i class="fas fa-heartbeat"></i>
+                            <span>Health</span>
+                        </div>
+                        <div class="category-btn" data-category="education">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Education</span>
+                        </div>
+                        <div class="category-btn" data-category="travel">
+                            <i class="fas fa-plane"></i>
+                            <span>Travel</span>
+                        </div>
+                        <div class="category-btn" data-category="other">
+                            <i class="fas fa-ellipsis-h"></i>
+                            <span>Other</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="category" value="food">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input type="text" id="description" placeholder="e.g., Lunch at restaurant" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount (₹)</label>
+                    <input type="number" id="amount" placeholder="0.00" min="0" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <button type="submit" class="add-btn">
+                    <i class="fas fa-plus"></i> Add Expense
+                </button>
+            </form>
+        </div>
+
+        <div class="category-filters" id="category-filters">
+            <div class="filter-btn active" data-filter="all"><i class="fas fa-th-list"></i> All</div>
+            <!-- Category filters will be added here dynamically -->
+        </div>
+
+        <div class="expenses-list">
+            <h2 class="expenses-title"><i class="fas fa-list-alt"></i> Expenses This Month</h2>
+            <div id="expenses-container">
+                <!-- Expenses will be added here dynamically -->
+                <div class="empty-state" id="empty-state">
+                    <i class="fas fa-receipt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    No expenses for this month
+                </div>
+            </div>
+        </div>
+        
+        <div class="app-version">
+            RupeeWise v1.0 | Made in India
+        </div>
+    </div>
+
+    <div class="install-banner" id="install-banner">
+        <div>Install RupeeWise on your phone</div>
+        <div>
+            <button class="install-btn" id="install-btn">Install</button>
+            <button class="cancel-install" id="cancel-install"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // Create and set manifest dynamically
+        const manifestData = {
+            "name": "RupeeWise - Smart Expense Tracker",
+            "short_name": "RupeeWise",
+            "description": "Smart expense tracking for Indians",
+            "start_url": "./",
+            "display": "standalone",
+            "background_color": "#ffffff",
+            "theme_color": "#ff9933",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23ff9933' rx='100'/%3E%3Cpath d='M320 120c0-16.57-13.43-30-30-30h-30V80c0-8.84-7.16-16-16-16h-64c-8.84 0-16 7.16-16 16v10h-30c-16.57 0-30 13.43-30 30v10h186v-10zm-146 90c-13.25 0-24-10.75-24-24 0-13.26 10.75-24 24-24s24 10.74 24 24c0 13.25-10.75 24-24 24zm86 0c-13.25 0-24-10.75-24-24 0-13.26 10.75-24 24-24s24 10.74 24 24c0 13.25-10.75 24-24 24zm-146-90v10h60v-10c0-5.52 4.48-10 10-10s10 4.48 10 10v10h60v-10c0-5.52 4.48-10 10-10s10 4.48 10 10v10h60v-10c0-5.52-4.48-10-10-10h-20V80c0-8.84-7.16-16-16-16h-84c-8.84 0-16 7.16-16 16v30h-20c-5.52 0-10 4.48-10 10zm306 250H111.84c-3.18 0-5.84 2.66-5.84 5.84v34.32c0 3.18 2.66 5.84 5.84 5.84H401v-46zm0-68H111.84c-3.18 0-5.84 2.66-5.84 5.84v34.32c0 3.18 2.66 5.84 5.84 5.84H401v-46zm-291.84 136c-8.84 0-16 7.16-16 16v16c0 8.84 7.16 16 16 16h291.68c8.84 0 16-7.16 16-16v-16c0-8.84-7.16-16-16-16H109.16zM384 32H128c-53.02 0-96 42.98-96 96v256c0 52.98 42.98 96 96 96h256c53.02 0 96-42.98 96-96V128c0-53.02-42.98-96-96-96zm64 352c0 35.29-28.71 64-64 64H128c-35.29 0-64-28.71-64-64V128c0-35.29 28.71-64 64-64h256c35.29 0 64 28.71 64 64v256z' fill='white'/%3E%3Ctext x='256' y='256' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial' font-weight='bold' font-size='100'%3E₹%3C/text%3E%3C/svg%3E",
+                    "sizes": "512x512",
+                    "type": "image/svg+xml",
+                    "purpose": "any maskable"
+                }
+            ]
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
+
+        // Service worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Create service worker file dynamically
+                const swCode = `
+                    const CACHE_NAME = 'rupee-wise-v1';
+                    const urlsToCache = [
+                        './',
+                        './index.html',
+                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+                    ];
+
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    return cache.addAll(urlsToCache);
+                                })
+                        );
+                    });
+
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    if (response) {
+                                        return response;
+                                    }
+                                    return fetch(event.request);
+                                })
+                        );
+                    });
+                `;
+
+                const swBlob = new Blob([swCode], {type: 'application/javascript'});
+                const swURL = URL.createObjectURL(swBlob);
+                
+                navigator.serviceWorker.register(swURL).then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Handle install prompt
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const installButton = document.getElementById('install-btn');
+        const cancelInstall = document.getElementById('cancel-install');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install banner
+            installBanner.style.display = 'flex';
+        });
+
+        installButton.addEventListener('click', () => {
+            // Hide the app provided install promotion
+            installBanner.style.display = 'none';
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        cancelInstall.addEventListener('click', () => {
+            installBanner.style.display = 'none';
+        });
+
+        // Expense Tracker Application Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const expenseForm = document.getElementById('expense-form');
+            const categoryInput = document.getElementById('category');
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            const descriptionInput = document.getElementById('description');
+            const amountInput = document.getElementById('amount');
+            const dateInput = document.getElementById('date');
+            const expensesContainer = document.getElementById('expenses-container');
+            const emptyState = document.getElementById('empty-state');
+            const totalAmount = document.getElementById('total-amount');
+            const currentMonthYearEl = document.getElementById('current-month-year');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            const categoryFilters = document.getElementById('category-filters');
+
+            // Category definitions with icons
+            const categories = {
+                food: { icon: 'fas fa-utensils', name: 'Food' },
+                shopping: { icon: 'fas fa-shopping-bag', name: 'Shopping' },
+                transport: { icon: 'fas fa-bus', name: 'Transport' },
+                bills: { icon: 'fas fa-file-invoice', name: 'Bills' },
+                entertainment: { icon: 'fas fa-film', name: 'Entertainment' },
+                health: { icon: 'fas fa-heartbeat', name: 'Health' },
+                education: { icon: 'fas fa-graduation-cap', name: 'Education' },
+                travel: { icon: 'fas fa-plane', name: 'Travel' },
+                other: { icon: 'fas fa-ellipsis-h', name: 'Other' }
+            };
+
+            // Set default date to today
+            const today = new Date();
+            dateInput.value = today.toISOString().split('T')[0];
+
+            // Current month and year for filtering
+            let currentMonth = today.getMonth();
+            let currentYear = today.getFullYear();
+            let activeFilter = 'all';
+
+            // Initialize category selection
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove selected class from all buttons
+                    categoryButtons.forEach(btn => btn.classList.remove('selected'));
+                    // Add selected class to clicked button
+                    this.classList.add('selected');
+                    // Update hidden input value
+                    categoryInput.value = this.dataset.category;
+                });
+            });
+
+            // Select the first category by default
+            categoryButtons[0].classList.add('selected');
+            categoryInput.value = categoryButtons[0].dataset.category;
+
+            // Update month display
+            function updateMonthYearDisplay() {
+                const monthNames = [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ];
+                currentMonthYearEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            }
+
+            // Initialize month display
+            updateMonthYearDisplay();
+
+            // Previous month button
+            prevMonthBtn.addEventListener('click', function() {
+                if (currentMonth === 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                } else {
+                    currentMonth--;
+                }
+                updateMonthYearDisplay();
+                renderExpenses();
+            });
+
+            // Next month button
+            nextMonthBtn.addEventListener('click', function() {
+                if (currentMonth === 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                } else {
+                    currentMonth++;
+                }
+                updateMonthYearDisplay();
+                renderExpenses();
+            });
+
+            // Load expenses from localStorage
+            function getExpenses() {
+                const expenses = localStorage.getItem('rupeeWiseExpenses');
+                return expenses ? JSON.parse(expenses) : [];
+            }
+
+            // Save expenses to localStorage
+            function saveExpenses(expenses) {
+                localStorage.setItem('rupeeWiseExpenses', JSON.stringify(expenses));
+            }
+
+            // Format currency (Indian style with commas)
+            function formatCurrency(amount) {
+                // Convert to Indian number format (with commas)
+                return amount.toLocaleString('en-IN', {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2
+                });
+            }
+
+            // Add new expense
+            expenseForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newExpense = {
+                    id: Date.now(),
+                    category: categoryInput.value,
+                    description: descriptionInput.value,
+                    amount: parseFloat(amountInput.value),
+                    date: dateInput.value
+                };
+                
+                const expenses = getExpenses();
+                expenses.push(newExpense);
+                saveExpenses(expenses);
+                
+                // Reset form (except category)
+                descriptionInput.value = '';
+                amountInput.value = '';
+                dateInput.value = today.toISOString().split('T')[0];
+                
+                // Re-render expenses
+                renderExpenses();
+                updateCategoryFilters();
+            });
+
+            // Delete expense
+            function deleteExpense(id) {
+                const expenses = getExpenses();
+                const updatedExpenses = expenses.filter(expense => expense.id !== id);
+                saveExpenses(updatedExpenses);
+                renderExpenses();
+                updateCategoryFilters();
+            }
+
+            // Format date for display
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-IN', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+
+            // Update category filters
+            function updateCategoryFilters() {
+                const expenses = getExpenses();
+                
+                // Get unique categories from current month's expenses
+                const filteredExpenses = expenses.filter(expense => {
+                    const expenseDate = new Date(expense.date);
+                    return expenseDate.getMonth() === currentMonth && 
+                           expenseDate.getFullYear() === currentYear;
+                });
+                
+                const uniqueCategories = [...new Set(filteredExpenses.map(expense => expense.category))];
+                
+                // Clear existing filters (except "All")
+                while (categoryFilters.children.length > 1) {
+                    categoryFilters.removeChild(categoryFilters.lastChild);
+                }
+                
+                // Add a filter button for each category
+                uniqueCategories.forEach(category => {
+                    if (category && categories[category]) {
+                        const filterBtn = document.createElement('div');
+                        filterBtn.className = `filter-btn ${activeFilter === category ? 'active' : ''}`;
+                        filterBtn.dataset.filter = category;
+                        filterBtn.innerHTML = `<i class="${categories[category].icon}"></i> ${categories[category].name}`;
+                        
+                        filterBtn.addEventListener('click', function() {
+                            document.querySelectorAll('.filter-btn').forEach(btn => {
+                                btn.classList.remove('active');
+                            });
+                            this.classList.add('active');
+                            activeFilter = this.dataset.filter;
+                            renderExpenses();
+                        });
+                        
+                        categoryFilters.appendChild(filterBtn);
+                    }
+                });
+                
+                // Make sure "All" filter has correct active state
+                categoryFilters.querySelector('[data-filter="all"]').classList.toggle('active', activeFilter === 'all
